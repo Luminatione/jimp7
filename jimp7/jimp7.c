@@ -1,5 +1,3 @@
-#pragma warning(disable:4996)
-
 #include <stdio.h>
 #include <stdlib.h> 
 
@@ -16,7 +14,7 @@ int main(int argc, char** argv) {
 
 	if (validateTextFinder(textFinder) != 0)
 	{
-		printf("%s: Nie poprawne parametry wywolania", argv[0]);
+		printf("%s: Nie poprawne parametry wywolania\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 

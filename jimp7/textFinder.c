@@ -1,31 +1,30 @@
-#pragma warning(disable:4996)
-
 #include <string.h>
 
 #include "textFinder.h"
 
 char* getWordWithSpacesOnBeginAndEnd(char* a)
 {
-	char* result = malloc((strlen(a) + 3) * sizeof(char));
+	char* result = malloc((strlen(a) + 3) * sizeof(result));
 	result[0] = ' ';
 	int i, j;
-	for(i = 1, j = 0; j < strlen(a); ++j)
+	for (i = 1, j = 0; j < (int)strlen(a); ++j)
 	{
-		if(a[j] == '\n' || a[j] == ',' || a[j] == '.')
+		if (a[j] == '\n' || a[j] == '\r' || a[j] == ',' || a[j] == '.')
 		{
 			continue;
 		}
 		result[i] = a[j];
 		++i;
 	}
-	result[i++] = ' ';
+	result[i] = ' ';
+	++i;
 	result[i] = '\0';
 	return result;
 }
 void addWord(struct textFinder* textFinder, char* rawWord)
 {
-	int* word = getWordWithSpacesOnBeginAndEnd(rawWord);
-	struct vecInt* buf = vecIntFromRange(word, strlen(word) + 1, sizeof(char));
+	int* word = (int*)getWordWithSpacesOnBeginAndEnd(rawWord);
+	struct vecInt* buf = vecIntFromRange(word, (int)strlen((char*)word) + 1, sizeof(char));
 	pushBack2(textFinder->words, buf);
 	freeVecInt(buf);
 	free(word);
@@ -50,11 +49,13 @@ void initializeTextFinder(struct textFinder* textFinder, char** words, int words
 
 int validateTextFinder(struct textFinder* textFinder)
 {
-	if (textFinder->wordsAmount == 0) {
+	if (textFinder->wordsAmount == 0)
+	{
 		return -1;
 	}
 
-	if (textFinder->in == NULL) {
+	if (textFinder->in == NULL)
+	{
 		return -1;
 	}
 	return 0;
@@ -62,19 +63,22 @@ int validateTextFinder(struct textFinder* textFinder)
 void checkLine(struct textFinder* textFinder, char* line)
 {
 	int i;
+	char* bufWithSpaces = getWordWithSpacesOnBeginAndEnd(line);
+
 	for (i = 0; i < textFinder->wordsAmount; i++)
 	{
-		char* bufWithSpaces = getWordWithSpacesOnBeginAndEnd(line);
-		if (strstr(bufWithSpaces, (char*)(textFinder->words->items[i].items)) != NULL) {
+		if (strstr(bufWithSpaces, (char*)(textFinder->words->items[i].items)) != NULL)
+		{
 			pushBack(&textFinder->lines->items[i], textFinder->linesAmount);
 		}
-		free(bufWithSpaces);
 	}
+	free(bufWithSpaces);
 }
 void parseTextFinderInput(struct textFinder* textFinder)
 {
 	char buf[BUFSIZE];
-	while (fgets(buf, BUFSIZE, textFinder->in) != NULL) {
+	while (fgets(buf, BUFSIZE, textFinder->in) != NULL)
+	{
 		textFinder->linesAmount++;
 		checkLine(textFinder, buf);
 	}
@@ -91,19 +95,22 @@ void printWordsLines(struct textFinder* textFinder, int wordIndex)
 
 void printWordOutput(struct textFinder* textFinder, int wordIndex)
 {
-	if (textFinder->lines->items[wordIndex].size > 0) {
-		printf("slowo \"%s\" wystapilo w liniach:", (char*)(textFinder->words->items[wordIndex].items));
+	if (textFinder->lines->items[wordIndex].size > 0)
+	{
+		printf("slowo%swystapilo w liniach:", (char*)(textFinder->words->items[wordIndex].items));
 		printWordsLines(textFinder, wordIndex);
 		printf("\n");
 	}
-	else {
-		printf("nie napotkano slowa \"%s\"\n", (char*)(textFinder->words->items[wordIndex].items));
+	else
+	{
+		printf("nie napotkano slowa%s\n", (char*)(textFinder->words->items[wordIndex].items));
 	}
 }
 void printTextFinderOutput(struct textFinder* textFinder)
 {
 	int i;
-	for (i = 0; i < textFinder->wordsAmount; i++) {
+	for (i = 0; i < textFinder->wordsAmount; i++)
+	{
 		printWordOutput(textFinder, i);
 	}
 }
