@@ -1,4 +1,5 @@
 #include <string.h>
+#include <ctype.h>
 
 #include "textFinder.h"
 
@@ -9,11 +10,18 @@ char* getWordWithSpacesOnBeginAndEnd(char* a)
 	int i, j;
 	for (i = 1, j = 0; j < (int)strlen(a); ++j)
 	{
-		if (a[j] == '\n' || a[j] == '\r' || a[j] == ',' || a[j] == '.')
+		if (a[j] == '\n' || a[j] == '\r')
 		{
 			continue;
 		}
-		result[i] = a[j];
+		if(!isalnum(a[j]))
+		{
+			result[i] = ' ';
+		}
+		else
+		{
+			result[i] = a[j];
+		}
 		++i;
 	}
 	result[i] = ' ';
